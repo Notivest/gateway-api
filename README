@@ -1,0 +1,3 @@
+Para correrlo es necesario definir:
+- NEW_RELIC_NAME
+- NEW_RELIC_LICENSE_KEY
