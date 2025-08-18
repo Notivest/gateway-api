@@ -1,4 +1,4 @@
-package com.notivest.gateway_api
+package com.notivest.gatewayapi
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class GatewayApiApplication
 
 fun main(args: Array<String>) {
-	runApplication<GatewayApiApplication>(*args)
+    runApplication<GatewayApiApplication>(*args)
 }

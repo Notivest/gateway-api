@@ -1,29 +1,21 @@
-###############################################################################
-# 1) BUILD
-###############################################################################
-FROM gradle:8.5-jdk21 AS build
+# Build
+FROM gradle:8.8-jdk21-alpine AS build
 WORKDIR /app
 COPY . .
 RUN gradle bootJar --no-daemon
 
-###############################################################################
-# 2) RUNTIME
-###############################################################################
+# Runtime
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-
-# Copiamos la app
-COPY --from=build /app/build/libs/*.jar app.jar
-
-# 🔑 Descargamos SOLO el JAR correcto
-RUN curl -fsSL \
-    https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic.jar \
-    -o newrelic.jar
-
-ENV PORT=8080 \
-    NEW_RELIC_APP_NAME=recommendation-service \
-    NEW_RELIC_LOG_FILE_NAME=STDOUT
-
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic.jar -o /app/newrelic.jar
+COPY --from=build /app/build/libs/*.jar /app/app.jar
+ENV NEW_RELIC_APP_NAME=tg-api-gateway \
+    NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true \
+    NEW_RELIC_APPLICATION_LOGGING_FORWARDING_ENABLED=false \
+    NEW_RELIC_LOG_FILE_NAME=STDOUT \
+    JAVA_OPTS="-XX:MaxRAMPercentage=75"
 EXPOSE 8080
-
-ENTRYPOINT ["sh","-c","exec java -Dserver.port=$PORT -javaagent:/app/newrelic.jar -jar /app/app.jar"]
+RUN useradd -r -u 1001 appuser
+USER appuser
+ENTRYPOINT ["sh","-c","exec java $JAVA_OPTS -javaagent:/app/newrelic.jar -jar /app/app.jar"]
