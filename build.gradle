@@ -15,10 +15,9 @@ java {
 
 repositories { mavenCentral() }
 
-/** 🔧 Importante: BOM de Spring Cloud para versionar los starters de Cloud */
+/** Importante: BOM de Spring Cloud para versionar los starters de Cloud */
 ext {
-	// Para Spring Boot 3.4.x, usa Spring Cloud 2024.x
-	set('springCloudVersion', '2024.0.2') // si prefieres, puedes subir a .3 cuando lo tengas
+	set('springCloudVersion', '2024.0.2')
 }
 
 dependencyManagement {

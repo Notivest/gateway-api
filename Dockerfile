@@ -10,7 +10,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl && rm -rf /var/lib/apt/lists/*
 RUN curl -fsSL https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic.jar -o /app/newrelic.jar
 COPY --from=build /app/build/libs/*.jar /app/app.jar
-ENV NEW_RELIC_APP_NAME=tg-api-gateway \
+ENV NEW_RELIC_APP_NAME=api-gateway \
     NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true \
     NEW_RELIC_APPLICATION_LOGGING_FORWARDING_ENABLED=false \
     NEW_RELIC_LOG_FILE_NAME=STDOUT \
