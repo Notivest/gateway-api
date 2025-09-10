@@ -1,0 +1,49 @@
+
+services:
+  # 📈 Price Fetcher Service
+  price-fetcher:
+    image: price-fetcher
+    container_name: price-fetcher
+    restart: unless-stopped
+    env_file:
+      - .env-prices
+    ports:
+      - "8081:8081"
+    networks:
+      - notivest-network
+
+  # 🌐 API Gateway
+  gateway-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gateway-api
+    restart: unless-stopped
+    env_file:
+      - .env-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - price-fetcher
+    networks:
+      - notivest-network
+
+  frontend-notivest:
+    image: frontend-notivest
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env-frontend
+    restart: unless-stopped
+    networks:
+      - notivest-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  notivest-network:
+    driver: bridge
