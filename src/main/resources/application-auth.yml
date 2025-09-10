@@ -1,6 +1,71 @@
 spring:
+  application:
+    name: api-gateway
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${AUTH0_ISSUER_URI}
+          issuer-uri: https://${AUTH0_DOMAIN}/
+          audiences: ${AUTH0_AUDIENCE}
+
+  # Rutas (tal cual las tenías)
+  cloud:
+    gateway:
+      routes:
+        - id: portfolio-service
+          uri: ${PORTFOLIO_SERVICE_URL:http://localhost:8082}
+          predicates: [ "Path=/api/portfolio/**" ]
+          filters:
+            - StripPrefix=2
+            - name: CircuitBreaker
+              args: { name: portfolio-service, fallbackUri: forward:/fallback/portfolio }
+
+        - id: prices-service
+          uri: ${PRICES_SERVICE_URL:http://localhost:8081}
+          predicates: [ "Path=/api/prices/**" ]
+          filters:
+            - StripPrefix=2
+            - name: CircuitBreaker
+              args: { name: prices-service, fallbackUri: forward:/fallback/prices }
+
+        - id: portfolio-health
+          uri: ${PORTFOLIO_SERVICE_URL:http://localhost:8082}
+          predicates: [ "Path=/api/portfolio/actuator/health" ]
+          filters: [ "StripPrefix=2" ]
+
+        - id: prices-health
+          uri: ${PRICES_SERVICE_URL:http://localhost:8081}
+          predicates: [ "Path=/api/prices/actuator/health" ]
+          filters: [ "StripPrefix=2" ]
+      discovery:
+        locator:
+          enabled: false
+      httpclient:
+        connect-timeout: 3000
+        response-timeout: PT30S
+      # ⬇️ CORS GLOBAL (manejado por Gateway)
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"      # Frontend local
+              - "http://127.0.0.1:3000"     # Alternativa localhost
+              - "http://frontend-notivest:3000"
+              - "${FRONTEND_ORIGINS:http://localhost:3000}"  # Configurable via env
+            allowedMethods: [ "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" ]
+            allowedHeaders: [ "Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With", "X-User-ID", "X-User-Email" ]
+            exposedHeaders: [ "X-Request-Id", "X-User-Id", "X-User-Email" ]
+            allowCredentials: true           # ✅ NECESARIO para JWT/cookies
+            maxAge: 3600
+
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

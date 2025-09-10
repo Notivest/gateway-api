@@ -37,8 +37,17 @@ dependencies {
 	/** 🌩️ Spring Cloud Gateway (sin versión, la pone el BOM) */
 	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
 
-	/** (Para activar luego) Resource Server JWT (Auth0) */
+	/** 🔐 Resource Server JWT (Auth0) */
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	
+	/** 🔑 JWT decoding y validación - No necesario, ya incluido en oauth2-resource-server */
+	// implementation 'org.springframework.boot:spring-boot-starter-oauth2-jose'
+	
+	/** 📦 Jackson para manejo de JSON en claims */
+	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+	
+	/** 🔄 Circuit Breaker para resilencia */
+	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j'
 
 	/** 🧾 Logs JSON → stdout (Fluent Bit / New Relic) */
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.4'

@@ -4,7 +4,10 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-
+.env-gateway
+.env-prices
+.env-frontend
+/scripts/get-auth0-token.sh
 ### STS ###
 .apt_generated
 .classpath
@@ -38,3 +41,9 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### Environment Variables ###
+.env
+.env.local
+.env.production
+.env.development
