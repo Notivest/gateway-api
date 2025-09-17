@@ -64,12 +64,7 @@ class AuthenticationErrorHandler(
                         )
                 }
             }
-            // JwtValidationException is not available in this context, handled by OAuth2AuthenticationException
-            // is JwtValidationException -> ErrorResponse(
-            //     error = "jwt_validation_failed",
-            //     message = "Error en la validación del JWT",
-            //     details = ex.errors.joinToString("; ") { it.description }
-            // )
+
             else -> {
                 when {
                     ex.message?.contains("JWT") == true ->

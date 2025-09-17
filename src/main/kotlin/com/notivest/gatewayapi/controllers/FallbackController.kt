@@ -4,15 +4,20 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 import java.time.Instant
 
 @RestController
 @RequestMapping("/fallback")
 class FallbackController {
-    @GetMapping("/portfolio")
-    fun portfolioFallback(): ResponseEntity<Map<String, Any>> {
-        val response =
+
+    @RequestMapping(
+        path = ["/portfolio"],
+        method = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS]
+    )
+    fun portfolioFallback(): ResponseEntity<Map<String, Any>> =
+        ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(
             mapOf(
                 "error" to "service_unavailable",
                 "message" to "Portfolio service is temporarily unavailable",
@@ -20,12 +25,14 @@ class FallbackController {
                 "timestamp" to Instant.now().toString(),
                 "status" to 503,
             )
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response)
-    }
+        )
 
-    @GetMapping("/prices")
-    fun pricesFallback(): ResponseEntity<Map<String, Any>> {
-        val response =
+    @RequestMapping(
+        path = ["/prices"],
+        method = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS]
+    )
+    fun pricesFallback(): ResponseEntity<Map<String, Any>> =
+        ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(
             mapOf(
                 "error" to "service_unavailable",
                 "message" to "Prices service is temporarily unavailable",
@@ -33,6 +40,5 @@ class FallbackController {
                 "timestamp" to Instant.now().toString(),
                 "status" to 503,
             )
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response)
-    }
+        )
 }
