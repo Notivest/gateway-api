@@ -29,6 +29,22 @@ spring:
             - name: CircuitBreaker
               args: { name: prices-service, fallbackUri: forward:/fallback/prices }
 
+        - id: alert-engine
+          uri: ${ALERT_ENGINE_URL:http://localhost:8083}
+          predicates: [ "Path=/api/alert/**" ]
+          filters:
+            - StripPrefix=2
+            - name: CircuitBreaker
+              args: { name: alert-engine, fallbackUri: forward:/fallback/alert }
+
+        - id: notification-service
+          uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8084}
+          predicates: [ "Path=/api/notification/**" ]
+          filters:
+            - StripPrefix=2
+            - name: CircuitBreaker
+              args: { name: notification-service, fallbackUri: forward:/fallback/notification }
+
         - id: portfolio-health
           uri: ${PORTFOLIO_SERVICE_URL:http://localhost:8082}
           predicates: [ "Path=/api/portfolio/actuator/health" ]

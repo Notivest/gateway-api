@@ -32,7 +32,7 @@ class Auth0Config {
     fun jwtDecoder(): ReactiveJwtDecoder {
         val issuer = "https://$domain/"
         val jwkSetUrl = "https://$domain/.well-known/jwks.json"
-        
+
         // Crear decoder usando el constructor que acepta JWK Set URL
         val jwtDecoder = NimbusReactiveJwtDecoder(jwkSetUrl)
 

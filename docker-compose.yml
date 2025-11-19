@@ -12,6 +12,7 @@ services:
     networks:
       - notivest-network
 
+
   # 🌐 API Gateway
   gateway-api:
     build:
@@ -25,8 +26,10 @@ services:
       - "8080:8080"
     depends_on:
       - price-fetcher
+      - portfolio-service
     networks:
       - notivest-network
+
 
   frontend-notivest:
     image: frontend-notivest
@@ -44,6 +47,116 @@ services:
       retries: 3
       start_period: 40s
 
+  portfolio-service:
+    image: portfolio-service
+    ports:
+      - "8082:8082"
+    env_file:
+      - .env-portfolio
+    restart: unless-stopped
+    depends_on:
+      portfolio-db:
+        condition: service_healthy
+    networks:
+      - notivest-network
+
+  portfolio-db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env-portfolio
+    volumes:
+        - portfolio-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - notivest-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+
+  alert-engine:
+    image: alert-engine
+    ports:
+      - "8083:8083"
+    env_file:
+      - .env-alertengine
+    depends_on:
+      alert-engine-db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - notivest-network
+
+  alert-engine-db:
+    image: postgres
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env-alertengine
+    volumes:
+        - alert-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - notivest-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+
+  notification-service:
+    image: notification-service
+    ports:
+      - "8084:8084"
+    env_file:
+      - .env-notification
+    depends_on:
+      notification-servicedb:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - notivest-network
+
+  notification-servicedb:
+    image: postgres:16
+    ports:
+      - "5434:5432"
+    env_file:
+      - .env-notification   # <-- corregido: lista o string en línea
+    volumes:
+      - notification-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - notivest-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: notification-service-mailpit
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    networks:
+      - notivest-network
+
 networks:
   notivest-network:
     driver: bridge
+
+volumes:
+  portfolio-data:
+  alert-data:
+  notification-data:

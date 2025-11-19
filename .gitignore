@@ -7,6 +7,9 @@ build/
 .env-gateway
 .env-prices
 .env-frontend
+.env-portfolio
+.env-alertengine
+.env-notification
 /scripts/get-auth0-token.sh
 ### STS ###
 .apt_generated
