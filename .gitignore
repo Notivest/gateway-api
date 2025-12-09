@@ -10,6 +10,7 @@ build/
 .env-portfolio
 .env-alertengine
 .env-notification
+.env-recommendation
 /scripts/get-auth0-token.sh
 ### STS ###
 .apt_generated

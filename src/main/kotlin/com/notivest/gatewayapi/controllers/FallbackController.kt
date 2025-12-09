@@ -39,4 +39,19 @@ class FallbackController {
                 "status" to 503,
             ),
         )
+
+    @RequestMapping(
+        path = ["/recommendation"],
+        method = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS],
+    )
+    fun recommendationFallback(): ResponseEntity<Map<String, Any>> =
+        ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(
+            mapOf(
+                "error" to "service_unavailable",
+                "message" to "Recommendation service is temporarily unavailable",
+                "service" to "recommendation-service",
+                "timestamp" to Instant.now().toString(),
+                "status" to 503,
+            ),
+        )
 }

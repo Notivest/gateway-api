@@ -1,3 +1,4 @@
+version: "3.9"
 
 services:
   # 📈 Price Fetcher Service
@@ -142,6 +143,30 @@ services:
       retries: 10
       start_period: 10s
 
+  recommendation-service-db:
+    image: postgres:16-alpine
+    env_file:
+      - .env-recommendation
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - notivest-network
+
+  recommendation-service:
+    image: recommendation-service
+    env_file:
+      - .env-recommendation
+    depends_on:
+      - recommendation-service-db
+    ports:
+      - "8086:8086"
+    restart: unless-stopped
+    networks:
+      - notivest-network
+
   mailpit:
     image: axllent/mailpit:latest
     container_name: notification-service-mailpit
@@ -160,3 +185,4 @@ volumes:
   portfolio-data:
   alert-data:
   notification-data:
+  pgdata:

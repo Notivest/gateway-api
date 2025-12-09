@@ -45,6 +45,14 @@ spring:
             - name: CircuitBreaker
               args: { name: notification-service, fallbackUri: forward:/fallback/notification }
 
+        - id: recommendation-service
+          uri: ${RECOMMENDATION_SERVICE_URL:http://localhost:8086}
+          predicates: [ "Path=/api/recommendation/**" ]
+          filters:
+            - StripPrefix=2
+            - name: CircuitBreaker
+              args: { name: recommendation-service, fallbackUri: forward:/fallback/recommendation }
+
         - id: portfolio-health
           uri: ${PORTFOLIO_SERVICE_URL:http://localhost:8082}
           predicates: [ "Path=/api/portfolio/actuator/health" ]
@@ -53,6 +61,11 @@ spring:
         - id: prices-health
           uri: ${PRICES_SERVICE_URL:http://localhost:8081}
           predicates: [ "Path=/api/prices/actuator/health" ]
+          filters: [ "StripPrefix=2" ]
+
+        - id: recommendation-health
+          uri: ${RECOMMENDATION_SERVICE_URL:http://localhost:8086}
+          predicates: [ "Path=/api/recommendation/actuator/health" ]
           filters: [ "StripPrefix=2" ]
       discovery:
         locator:
