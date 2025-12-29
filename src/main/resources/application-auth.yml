@@ -48,6 +48,9 @@ spring:
         - id: recommendation-service
           uri: ${RECOMMENDATION_SERVICE_URL:http://localhost:8086}
           predicates: [ "Path=/api/recommendation/**" ]
+          metadata:
+            # Override del timeout solo para esta ruta (milisegundos)
+            response-timeout: ${RECOMMENDATION_RESPONSE_TIMEOUT_MS:60000}
           filters:
             - StripPrefix=2
             - name: CircuitBreaker
