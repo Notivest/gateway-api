@@ -101,3 +101,9 @@ management:
     web:
       exposure:
         include: health,info
+
+resilience4j:
+  timelimiter:
+    instances:
+      recommendation-service:
+        timeout-duration: ${RECOMMENDATION_RESPONSE_TIMEOUT_MS:60000}
