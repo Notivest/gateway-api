@@ -18,10 +18,14 @@ class RequestLoggingFilter : GlobalFilter, Ordered {
     ): Mono<Void> {
         val request = exchange.request
         val startTime = System.currentTimeMillis()
+        val correlationId =
+            exchange.getAttribute<String>(CorrelationIdFilter.ATTRIBUTE_CORRELATION_ID)
+                ?: request.headers.getFirst(CorrelationIdFilter.HEADER_CORRELATION_ID)
+                ?: "unknown"
 
-        // Log request details
         logger.info(
-            "Incoming request: {} {} from {} - User-Agent: {}",
+            "incoming-request correlationId={} method={} path={} remoteIp={} userAgent={}",
+            correlationId,
             request.method,
             request.path.value(),
             request.remoteAddress?.address?.hostAddress ?: "unknown",
@@ -44,7 +48,8 @@ class RequestLoggingFilter : GlobalFilter, Ordered {
             val response = exchange.response
 
             logger.info(
-                "Request completed: {} {} -> {} in {}ms",
+                "request-completed correlationId={} method={} path={} status={} durationMs={}",
+                correlationId,
                 request.method,
                 request.path.value(),
                 response.statusCode?.value() ?: "unknown",
@@ -53,5 +58,5 @@ class RequestLoggingFilter : GlobalFilter, Ordered {
         }
     }
 
-    override fun getOrder(): Int = Ordered.HIGHEST_PRECEDENCE
+    override fun getOrder(): Int = Ordered.HIGHEST_PRECEDENCE + 10
 }

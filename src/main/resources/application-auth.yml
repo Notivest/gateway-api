@@ -87,8 +87,8 @@ spring:
               - "http://frontend-notivest:3000"
               - "${FRONTEND_ORIGINS:http://localhost:3000}"  # Configurable via env
             allowedMethods: [ "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" ]
-            allowedHeaders: [ "Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With", "X-User-ID", "X-User-Email" ]
-            exposedHeaders: [ "X-Request-Id", "X-User-Id", "X-User-Email" ]
+            allowedHeaders: [ "Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With", "X-User-ID", "X-User-Email", "X-Correlation-Id" ]
+            exposedHeaders: [ "X-Request-Id", "X-User-Id", "X-User-Email", "X-Correlation-Id" ]
             allowCredentials: true           # ✅ NECESARIO para JWT/cookies
             maxAge: 3600
 
